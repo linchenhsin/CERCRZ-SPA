@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mermaid/0.5.5/mermaid.min.css">
-    <link rel="stylesheet" href="css/default.css">
+    <link rel="stylesheet" href="css/boostrap.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -165,7 +165,7 @@
         function fillEditor(source) {
             $("#editor").html(source);
             var editor = ace.edit("editor");
-            editor.setTheme("ace/theme/tomorrow_night_eighties");
+            editor.setTheme("ace/theme/xcode");
             editor.getSession().setMode("ace/mode/ruby");
 
             //Gets the current height of the screen.
@@ -501,14 +501,14 @@
     </script>
     <script>
         /*
-                                                                                                                                                                                                        			5 modes: 
-                                                                                                                                                                                                        			
-                                                                                                                                                                                                        			0: lineNum
-                                                                                                                                                                                                        			1: procName
-                                                                                                                                                                                                        			2: varName
-                                                                                                                                                                                                        			3: const
-                                                                                                                                                                                                        			4: boolean
-                                                                                                                                                                                                        		*/
+                                                                                                                                                                                                                                        			5 modes: 
+                                                                                                                                                                                                                                        			
+                                                                                                                                                                                                                                        			0: lineNum
+                                                                                                                                                                                                                                        			1: procName
+                                                                                                                                                                                                                                        			2: varName
+                                                                                                                                                                                                                                        			3: const
+                                                                                                                                                                                                                                        			4: boolean
+                                                                                                                                                                                                                                        		*/
 
         var source = "procedure Daisy {\r\n\ta = 10;\r\n\tc = a + 4;\r\n\ti = 14 + a;\r\n\tt = c * a + 5;\r\n\tx = c + t * 12;\r\n\tcall Tulip;\r\n\tx = x + a + c;\r\n\tcall Violet;\r\n\tb = x + a * c;\r\n\twhile i {\r\n\t\tb = c - t;\r\n\t\tif a then {\r\n\t\t\tt = t + a;\r\n\t\t\ti = t + 1;\r\n\t\t} else {\r\n\t\t\tc = t + a;\r\n\t\t\tcall Violet;\r\n\t\t\ti = i - 17;\r\n\t\t}\r\n\t\tc = t + a;\r\n\t}\r\n\tcall Iris;\r\n}\r\n\r\nprocedure Iris {\r\n\twhile i {\r\n\t\ta = t * 3 + 2 * c;\r\n\t\tcall Tulip;\r\n\t}\r\n\tt = t + a + i;\r\n}\r\n\r\nprocedure Violet {\r\n\twhile x {\r\n\t\ta = c + a;\r\n\t}\r\n\tc = a + c;\r\n}\r\n\r\nprocedure Tulip {\r\n\twhile b {\r\n\t\tif i then {\r\n\t\t\tc = a + 80;\r\n\t\t} else {\r\n\t\t\ta = a * c + t + b * x;\r\n\t\t}\r\n\t}\r\n}";
 

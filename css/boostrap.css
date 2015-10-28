@@ -1,0 +1,116 @@
+@media screen and (min-width:768px) {
+    .navbar,
+    .navbar>.container,
+    .navbar-brand-centered {
+        height: 60px;
+    }
+    #results {
+        margin-top: 62px;
+    }
+    #theme_btn {
+        height: 30px !important;
+        width: 30px !important;
+    }
+}
+.navbar-brand-centered {
+    margin: 0;
+    float: none;
+}
+.navbar>.container .navbar-brand-centered,
+.navbar>.container-fluid .navbar-brand-centered {
+    text-align: center;
+}
+.navbar-brand-centered a img {
+    height: 100%;
+}
+#theme_btn {
+    float: left;
+    background-color: #42464A;
+    height: 20px;
+    width: 20px;
+    padding: 0;
+}
+#editor {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    outline: 1px solid grey;
+}
+.editor {}
+.spacer {
+    margin-top: 40px;
+    /* define margin as you see fit */
+}
+.codeBody {
+    font-size: 12px;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+.indentable {
+    border-left: 1px solid #DDD;
+}
+.codeTable tbody tr td {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 5px;
+}
+#tuplesResult {
+    margin: 0;
+}
+#tuplesResult li {
+    text-align: center
+}
+#mermaidChart0 {
+    display: block;
+    float: none;
+    margin: 0 auto;
+}
+.highlightProcName {
+    background-color: #D9EDF7;
+}
+.highlightVarName {
+    background-color: #F2DEDE;
+}
+.highlightCost {
+    background-color: #DFF0D8;
+}
+.list-inline {
+    margin-bottom: 0;
+}
+stmtNum {
+    color: black;
+}
+procedure {
+    color: red;
+}
+procName {
+    color: maroon;
+}
+varName {
+    color: navy;
+}
+const {
+    color: #888;
+}
+call {
+    color: blue;
+}
+if {
+    color: blue;
+}
+then {
+    color: blue;
+}
+else {
+    color: blue;
+}
+while {
+    color: blue;
+}
+assignment {
+    color: black;
+}
+bool {
+    color: blue;
+}
