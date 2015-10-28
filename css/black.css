@@ -5,7 +5,7 @@
         height: 60px;
     }
     #results {
-        margin-top: 62px;
+        margin-top: 45px;
     }
     #theme_btn {
         height: 30px !important;
@@ -47,39 +47,41 @@ body {
 
 .nav-tabs {
     border: none;
-    margin: 0 0 20px 0;
+    /*    margin: 0 0 20px 0;*/
 }
 .nav-tabs>li {
     width: 33.33333%;
 }
 .nav-tabs>li>a {
     border: 2px solid transparent !important;
-    border-bottom: 2px solid grey !important;
+    /*    border-bottom: 2px solid grey !important;*/
     border-radius: 0;
+    margin-right: 0px;
+    background-color: #4C4C4C;
     color: #E6E6E6;
+    font-weight: bold;
     text-align: center;
     padding: 10px 0px;
 }
 .nav-tabs>li>a:hover {
-    border-bottom: 2px solid #8ACCEE !important;
-    background: transparent !important;
+    background: #666666;
     color: white !important;
 }
 .nav-tabs>li.active>a,
 .nav-tabs>li.active>a:focus {
-    background: transparent;
-    border-bottom: 2px solid #6698B1 !important;
+    background: #383838 !important;
+    /*    border-bottom: 2px solid #6698B1 !important;*/
     color: floralwhite;
 }
 .list-group-item {
-    background: none;
+    background: transparent;
 }
 #editor {
     position: absolute;
     bottom: 16px;
     left: 16px;
     right: 16px;
-    outline: 1px solid grey;
+    outline: 1px solid #383838;
 }
 .codeBody {
     font-size: 12px;
@@ -162,6 +164,11 @@ assignment {
 bool {
     color: #F65E3D;
 }
+#cfg.list-group>.list-group-item {
+    background-color: #383838;
+    border-radius: 0px;
+    border: none;
+}
 .mermaid {
     cursor: pointer;
 }
@@ -171,18 +178,21 @@ bool {
     margin: 0 auto;
 }
 .mermaid path {
-    fill: #1497BB;
-    stroke: #1497BB !important;
+    fill: #8ACCEE;
+    stroke: #8ACCEE !important;
 }
-.node rect,
-.node circle,
-.node polygon {
+.node circle {
     fill: none;
-    stroke: #1497BB;
+    stroke: #8ACCEE;
+    stroke-width: 2px;
+}
+.node rect {
+    fill: none;
+    stroke: #EC83C0;
     stroke-width: 2px;
 }
 .mermaid .label {
-    color: white;
+    color: #E6E6E6;
     font-size: 18px;
 }
 
