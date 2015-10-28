@@ -1,0 +1,245 @@
+@media screen and (min-width:768px) {
+    .navbar,
+    .navbar>.container,
+    .navbar-brand-centered {
+        height: 60px;
+    }
+    #results {
+        margin-top: 62px;
+    }
+    #theme_btn {
+        height: 30px !important;
+        width: 30px !important;
+    }
+}
+body {
+    background: #EEEEEE;
+    color: #000000;
+}
+
+/***top***/
+
+.navbar {
+    background: #ffffff;
+    border: none;
+    border-radius: 0px;
+}
+.navbar-brand-centered {
+    margin: 0;
+    float: none;
+}
+.navbar>.container .navbar-brand-centered,
+.navbar>.container-fluid .navbar-brand-centered {
+    text-align: center;
+}
+.navbar-brand-centered a img {
+    height: 100%;
+}
+#theme_btn {
+    float: left;
+    background-color: #42464A;
+    height: 20px;
+    width: 20px;
+    padding: 0;
+}
+
+/***left***/
+
+.nav-tabs {
+    border: none;
+    margin: 0 0 20px 0;
+}
+.nav-tabs>li {
+    width: 33.33333%;
+}
+.nav-tabs>li>a {
+    border: 2px solid transparent !important;
+    border-bottom: 2px solid grey !important;
+    border-radius: 0;
+    color: #000000;
+    text-align: center;
+    padding: 10px 0px;
+}
+.nav-tabs>li>a:hover {
+    border-bottom: 2px solid #8ACCEE !important;
+    background: transparent !important;
+    color: #5771B3 !important;
+}
+.nav-tabs>li.active>a,
+.nav-tabs>li.active>a:focus {
+    background: transparent;
+    border-bottom: 2px solid #6698B1 !important;
+    color: #4B6199;
+}
+.list-group-item {
+    background: none;
+}
+#editor {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    outline: 1px solid grey;
+}
+.codeBody {
+    font-size: 12px;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+.indentable {}
+.codeTable {
+    color: #000000;
+    border: none;
+}
+.codeTable thead tr th {
+    background-color: #bdbdbd;
+    color: #000000;
+    border: none;
+}
+.codeTable tbody tr td {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 5px;
+    background-color: #F4EFED;
+    border: none;
+}
+.codeTable tbody>tr.warning>td {
+    background-color: #F6DD8B !important;
+}
+.codeTable tbody > tr > td:first-child {
+    background-color: #e0e0e0;
+    color: #424242;
+}
+.highlightCode {
+    background-color: #F6DD8B;
+}
+.highlightProcName {
+    background-color: #A20044;
+    color: #F4ECE9;
+}
+.highlightVarName {
+    background-color: #512da8;
+    color: #F4ECE9;
+}
+.highlightCost {
+    background-color: #827717;
+    color: #F4ECE9;
+}
+stmtNum {
+    color: #455a64;
+}
+procedure {
+    color: #388e3c;
+}
+procName {
+    color: #A20044;
+}
+varName {
+    color: #512da8;
+}
+const {
+    color: #827717;
+}
+call {
+    color: #00649D;
+}
+if {
+    color: #00649D;
+}
+then {
+    color: #00649D;
+}
+else {
+    color: #00649D;
+}
+while {
+    color: #00649D;
+}
+assignment {
+    color: #000000;
+}
+bool {
+    color: #dd2c00;
+}
+.mermaid {
+    cursor: pointer;
+}
+#mermaidChart0 {
+    display: block;
+    float: none;
+    margin: 0 auto;
+}
+.mermaid path {
+    fill: #1497BB;
+    stroke: #1497BB !important;
+}
+.node rect,
+.node circle,
+.node polygon {
+    fill: none;
+    stroke: #1497BB;
+    stroke-width: 2px;
+}
+.mermaid .label {
+    color: black;
+    font-size: 18px;
+}
+
+/***right***/
+
+.input-group {
+    border-radius: 0px;
+}
+.input-group-addon,
+.form-control.typeahead,
+.dropdown-menu {
+    border-radius: 0px;
+}
+.dropdown-menu>li>a {}
+.btn.btn-default {
+    color: white;
+    background: #129889;
+    border-radius: 0px;
+}
+.btn.btn-default:hover {
+    background: #15B09E;
+}
+.spacer {
+    margin-top: 20px;
+    /* define margin as you see fit */
+}
+.panel {
+    background: transparent;
+    color: #000000;
+    border-radius: 0px;
+    border: none;
+}
+.panel-heading {
+    background: transparent;
+    color: #000000;
+    border-radius: 0px;
+    border: 1px solid #666666;
+}
+.panel-default>.panel-heading {
+    background-color: #e0e0e0;
+    color: #000000;
+    border-color: #666666;
+}
+.panel>.table-bordered,
+.panel>.table-bordered>tbody>tr>th,
+.panel>.table-bordered>tbody>tr>td {
+    border: 1px solid #666666;
+}
+.table>tbody>tr>td.warning {
+    background-color: #F6DD8B;
+}
+#tuplesResult {
+    margin: 0;
+}
+#tuplesResult li {
+    text-align: center;
+    border: 1px solid #6D6D6D;
+}
+.list-inline {
+    margin-bottom: 0;
+}

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <title>CERCRZ 01 - Static Program Analyser</title>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mermaid/0.5.5/mermaid.min.css">
+    <link rel="stylesheet" href="css/default.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/3.1.1/bootstrap3-typeahead.js"></script>
+    <script src="https://cdn.rawgit.com/twitter/typeahead.js/master/dist/bloodhound.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true
+        });
+
+    </script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-default nav_offset">
+        <div class="container-fluid">
+            <div class="navbar-brand navbar-brand-centered">
+                <button type="button" class="btn" id="theme_btn"></button>
+                <a href="."><img src="https://c1.staticflickr.com/1/738/22552398041_6883e1f8ab_o_d.png" alt="CERCRZ"></a>
+            </div>
+
+        </div>
+    </nav>
+    <div id="content" class="container-fluid">
+        <div class="row max_height">
+            <div class="col-md-4 max_height">
+                <ul class="nav nav-tabs fake_height" role="tablist">
+                    <li id="li-editorTab0" role="presentation"><a data-toggle="tab" href="#editorTab0">Editor</a></li>
+                    <li id="li-codeTab0" role="presentation"><a data-toggle="tab" href="#codeTab0">Source Code</a></li>
+                    <li id="li-cfgTab0" role="presentation" class="active"><a data-toggle="tab" href="#cfgTab0">CFG</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" id="editorTab0" class="tab-pane fade">
+                        <div id="editor"></div>
+                    </div>
+                    <div role="tabpanel" id="codeTab0" class="tab-pane fade">
+                        <table class="table table-striped table-bordered table-hover codeTable">
+                            <thead>
+                                <tr>
+                                    <th class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center">#</th>
+                                    <th id="programName" class="col-xs-11 col-sm-11 col-md-11 col-lg-11 text-center">Daisy</th>
+                                </tr>
+                            </thead>
+                            <tbody class="codeBody"></tbody>
+                        </table>
+                    </div>
+                    <div role="tabpanel" id="cfgTab0" class="tab-pane fade in active">
+                        <ul id="cfg" class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+            <div id="results" class="col-md-8">
+                <form id="pqlForm">
+                    <input id="pql-source-input" type="text" name="source" class="hidden"></input>
+                    <input id="pql-tabState-input" type="text" name="tabState" class="hidden"></input>
+                    <input id="pql-cfg-input" type="text" name="cfg" class="hidden"></input>
+                    <input id="pql-prettyPrint-input" type="text" name="prettyPrintData" class="hidden"></input>
+                    <input id="pql-results-input" type="text" name="results" class="hidden"></input>
+                    <div class="input-group">
+                        <input id="pqlInput" type="text" name="pql" class="form-control typeahead" placeholder="Enter Your PQL Query" aria-describedby="pql-input" autocomplete="off"></input>
+                        <span class="input-group-btn">
+							<button class="btn btn-default" id="pqlInput-submit-btn" type="button">Go!</button>
+						</span>
+                    </div>
+                </form>
+                <div class="row spacer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var entityMap = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': '&quot;',
+            "'": '&#39;',
+            "/": '&#x2F;'
+        };
+
+        function escapeHtml(string) {
+            return String(string).replace(/[&<>"'\/]/g, function(s) {
+                return entityMap[s];
+            });
+        }
+
+    </script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: false
+        });
+
+        function checkFlag() {
+            if ($("svg").length < 1) {
+                window.setTimeout(checkFlag, 100);
+            } else {
+                $('.mermaid').html($('.mermaid').children());
+                $('.mermaid').click(
+                    function() {
+                        var cloned = $(this).clone();
+                        var placeholderDiv = $("<div class='container'></div>");
+                        var alertBox = $("<div id='cfgAlert' class='alert alert-warning alert-dismissible' role='alert'>" +
+                            "<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+                            "Click on the Image again to exit full-screen.</div>");
+                        alertBox.fadeTo(2500, 500).slideUp(500, function() {
+                            alertBox.alert('close');
+                        });
+                        placeholderDiv.append(alertBox);
+                        placeholderDiv.append(cloned);
+                        placeholderDiv.insertAfter("nav");
+                        $("#content").hide();
+                        cloned.click(function() {
+                            $(this).remove();
+                            $("#cfgAlert").remove();
+                            $("#content").show();
+                        });
+                    }
+                );
+            }
+        }
+
+        function drawGraph(graphSource) {
+            $('#cfg').append('<li class="list-group-item"><div class="mermaid">' + graphSource + '</div></li>');
+            checkFlag();
+            mermaid.init({
+                noteMargin: 10
+            }, ".mermaid");
+        }
+
+    </script>
+    <script>
+        function printPrettyCode(prettyCodeTupleArray) {
+            $("#programName").html(prettyCodeTupleArray[0][0]);
+            var codeBody = $(".codeBody");
+            for (var i = 1; i < prettyCodeTupleArray.length; i++) {
+                var stmtNum = prettyCodeTupleArray[i][0] == 0 ? '' : prettyCodeTupleArray[i][0];
+                codeBody.append("<tr class='___" + stmtNum + "'><td class='text-right'>" + stmtNum + "</td><td class='indentable' data-indent='" + prettyCodeTupleArray[i][1] + "' >" + prettyCodeTupleArray[i][2] + "</td></tr>");
+            }
+            indent();
+        }
+
+        function indent() {
+            $("td.indentable")
+                .css("padding-left", function(index) {
+                    return 10 * parseInt($(this).data("indent")) + 5 + "px";
+                });
+        }
+
+    </script>
+    <script>
+        function fillEditor(source) {
+            $("#editor").html(source);
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/tomorrow_night_eighties");
+            editor.getSession().setMode("ace/mode/ruby");
+
+            //Gets the current height of the screen.
+            var screenHeight = $(window).height();
+            var row = $('.max_height');
+
+            var offset = $('.nav_offset');
+
+            screenHeight = screenHeight - offset.outerHeight(true);
+
+            // Assign that height to the .row
+            row.css({
+                'height': screenHeight + 'px',
+            });
+
+            // This makes the div's height responsive when you resize the screen or the window of the browser.
+            $(window).resize(function() {
+                screenHeight = $(window).height() - $('.nav_offset').outerHeight(true);
+                row.css({
+                    'height': (screenHeight) + 'px',
+                });
+                var fake_height = $('.fake_height');
+                $('#editor').css({
+                    top: fake_height.outerHeight(true)
+                });
+            });
+
+            var fake_height = $('.fake_height');
+            $('#editor').css({
+                top: fake_height.outerHeight(true)
+            });
+        }
+
+    </script>
+    <script>
+        var keywords = ['procedure', 'stmtLst', 'stmt', 'assign', 'call', 'while', 'if', 'variable', 'constant', 'prog_line', 'Select', 'such that', 'with', 'pattern', 'Modifies(', 'Uses(',
+            'Calls(', 'Calls*(', 'Parent(', 'Parent*(', 'Follows(', 'Follows*(', 'Next(', 'Next*(', 'Affects(', 'Affects*(', 'and', '.procName', '.varName', '.value', '.stmt#', 'BOOLEAN'
+        ];
+        $(".typeahead").typeahead({
+            source: keywords,
+            minLength: 2,
+            updater: function(item) {
+                return this.$element.val().replace(/[^\s]*$/, '') + item + ' ';
+            },
+            matcher: function(item) {
+                var tquery = extractor(this.query);
+                if (!tquery) return false;
+                return ~item.toLowerCase().indexOf(tquery.toLowerCase())
+            },
+            highlighter: function(item) {
+                var query = extractor(this.query).replace(/[\s\.]/g, '\\$&')
+                return item.replace(new RegExp('(' + query + ')', 'ig'), function($1, match) {
+                    return '<strong>' + match + '</strong>'
+                })
+            }
+        }, {
+            limit: 8,
+            source: keywords,
+            displayKey: 'value',
+        });
+
+        // constructs the suggestion engine
+        var keywords = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            // `keywords` is an array of state names defined in "The Basics"
+            local: keywords
+        });
+
+        function extractor(query) {
+            var result = /(\.?[^\s\.]+)$/.exec(query);
+            //alert(result);
+            if (result && result[1])
+                return result[1].trim();
+            return '';
+        }
+
+    </script>
+    <script>
+        var classToHighlightLine = "warning";
+        var classToHighlightProcName = 'highlightProcName';
+        var classToHighlightVarName = 'highlightVarName';
+        var classToHighlightConst = 'highlightCost';
+
+        function getAllContains(selector, excatContains) {
+            return $(".codeBody " + selector).filter(function() {
+                return $(this).text() == excatContains;
+            });
+        }
+
+        function applyAddEach(viewSetting, eaDataToHighlight) {
+            switch (viewSetting) {
+                case 0:
+                    $('.___' + eaDataToHighlight).addClass(classToHighlightLine);
+                    break;
+                case 1:
+                    getAllContains('procName', eaDataToHighlight).addClass(classToHighlightProcName);
+                    break;
+                case 2:
+                    getAllContains('varName', eaDataToHighlight).addClass(classToHighlightVarName);
+                    break;
+                case 3:
+                    getAllContains('const', eaDataToHighlight).addClass(classToHighlightConst);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function applyToAll(viewSetting, classToSelect, applyToEachFn) {
+            for (var i = 0; i < classToSelect.length; i++) {
+                if (viewSetting.length == 1) {
+                    applyToEachFn(viewSetting[0], classToSelect[i]);
+                } else {
+                    for (var x = 0; x < viewSetting.length; x++) {
+                        applyToEachFn(viewSetting[x], classToSelect[i][x]);
+                    }
+                }
+            }
+        }
+
+        function applyRemoveEach(viewSetting, eaDataToHighlight) {
+            switch (viewSetting) {
+                case 0:
+                    $('.___' + eaDataToHighlight).removeClass(classToHighlightLine);
+                    break;
+                case 1:
+                    getAllContains('procName', eaDataToHighlight).removeClass(classToHighlightProcName);
+                    break;
+                case 2:
+                    getAllContains('varName', eaDataToHighlight).removeClass(classToHighlightVarName);
+                    break;
+                case 3:
+                    getAllContains('const', eaDataToHighlight).removeClass(classToHighlightConst);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /*
+        	5 modes: 
+        	
+        	0: lineNum
+        	1: procName
+        	2: varName
+        	3: const
+        	4: boolean
+        */
+
+        function updateListener() {
+
+            $(".hoverable").hover(function() {
+                var dataToHighlight = JSON.parse($(this).attr('results'));
+                var view = JSON.parse($(this).attr('view'));
+
+                // check if its boolean
+                if (view.length > 1 || view[0] !== 5) {
+                    applyToAll(view, dataToHighlight, applyAddEach);
+                }
+                $(this).addClass(classToHighlightLine);
+            }, function() {
+
+                if ($(this).attr('isClicked') === 'true')
+                    return;
+
+                var dataToHighlight = JSON.parse($(this).attr('results'));
+                var view = JSON.parse($(this).attr('view'));
+
+                // check if its boolean
+                if (view.length > 1 || view[0] !== 5) {
+                    applyToAll(view, dataToHighlight, applyRemoveEach);
+                }
+                $(this).removeClass(classToHighlightLine);
+            });
+            $(".hoverable").click(function() {
+
+                var clickedElem = $(this);
+                $(".hoverable[isClicked='true']").each(function(ea) {
+                    if ($(this).attr('id') !== clickedElem.attr('id')) {
+                        $(this).attr('isClicked', 'false');
+                        var dataToHighlight = JSON.parse($(this).attr('results'));
+                        var view = JSON.parse($(this).attr('view'));
+
+                        // check if its boolean
+                        if (view.length > 1 || view[0] !== 5) {
+                            applyToAll(view, dataToHighlight, applyRemoveEach);
+                        }
+                        $(this).removeClass(classToHighlightLine);
+                    }
+                });
+
+                if ($(this).attr('isClicked') === 'true') {
+                    $(this).attr('isClicked', 'false');
+                    var dataToHighlight = JSON.parse($(this).attr('results'));
+                    var view = JSON.parse($(this).attr('view'));
+
+                    // check if its boolean
+                    if (view.length > 1 || view[0] !== 5) {
+                        applyToAll(view, dataToHighlight, applyRemoveEach);
+                    }
+                    $(this).removeClass(classToHighlightLine);
+                } else {
+                    $(this).attr('isClicked', 'true');
+                    var dataToHighlight = JSON.parse($(this).attr('results'));
+                    var view = JSON.parse($(this).attr('view'));
+
+                    // check if its boolean
+                    if (view.length > 1 || view[0] !== 5) {
+                        applyToAll(view, dataToHighlight, applyAddEach);
+                    }
+                    $(this).addClass(classToHighlightLine);
+                }
+            });
+        }
+
+        function formatResults(view, resultArray) {
+
+            view = JSON.parse(view);
+            resultArray = JSON.parse(resultArray);
+
+            if (view.length === 1 && view[0] == 4) {
+
+                return "<bool>" + resultArray[0] + "</bool>";
+            }
+
+            var resultListing = "<ul class='list-inline'>"
+
+            for (var i = 0; i < resultArray.length; i++) {
+                if (view.length > 1) {
+                    resultListing += "<li><ul id='tuplesResult' class='list-group'>"
+                    for (var j = 0; j < view.length; j++) {
+                        resultListing += formatEachValue(view[j], resultArray[i][j], "li", "class='list-group-item'");
+                    }
+                    resultListing += "</ul></li>"
+                } else {
+                    resultListing += formatEachValue(view[0], resultArray[i], "li", "");
+                }
+            }
+
+            resultListing += "</ul>";
+
+            return resultListing;
+        }
+
+        function formatEachValue(view, eaValue, cellType, cssClass) {
+            var startTag = "<" + cellType + " " + cssClass + ">";
+            var endTag = "</" + cellType + ">";
+            switch (view) {
+                case 0:
+                    return startTag + "<stmtNum>" + eaValue + "</stmtNum>" + endTag;
+                    break;
+                case 1:
+                    return startTag + "<procName>" + eaValue + "</procName>" + endTag;
+                    break;
+                case 2:
+                    return startTag + "<varName>" + eaValue + "</varName>" + endTag;
+                    break;
+                case 3:
+                    return startTag + "<const>" + eaValue + "</const>" + endTag;
+                    break;
+            }
+        }
+
+        function constructResult(query, view, resultArray, timeTaken, id) {
+            return "<div class='panel panel-default'><div class='panel-heading'>" + escapeHtml(query) + "</div><table class='table table-bordered'><tbody><tr><th scope='row' class='col-md-2'>Results</th>" + "<td id='___result" + id + "' class='col-md-10 hoverable' view='" + view + "' results='" + resultArray + "' >" + formatResults(view, resultArray) + "</td></tr><tr><th scope='row'>Time Taken</th><td>" + timeTaken + "ms</td></tr></tbody></table></div>"
+        }
+
+        function insertResult(results) {
+            for (var i = 0; i < results.length; i++) {
+                var eaResult = results[i];
+                $(constructResult(eaResult[0], eaResult[1], eaResult[2], eaResult[3], i)).insertAfter("#results .spacer");
+            }
+            updateListener();
+        }
+
+    </script>
+    <script>
+        var idList = ["#li-editorTab0", "#li-codeTab0", "#li-cfgTab0"];
+        var isDrawn = [0, 0, 0];
+        $(idList[0]).click(function() {
+            if (isDrawn[0] == 0)
+                fillEditor(source);
+            isDrawn[0] = 1;
+            tabState = 0;
+        });
+        $(idList[1]).click(function() {
+            if (isDrawn[1] == 0)
+                printPrettyCode(prettyPrintData);
+            isDrawn[1] = 1;
+            tabState = 1;
+        });
+        $(idList[2]).click(function() {
+            tabState = 2;
+        });
+
+        function selectTab(selection) {
+            if (tabState != 2)
+                $(idList[selection] + " a").click();
+        }
+
+    </script>
+    <script>
+        $('#pqlInput-submit-btn').click(function() {
+            fillData();
+            $('#pqlForm').submit();
+        });
+        $("#pqlForm").submit(function() {
+            alert("Send Query to Server");
+        });
+
+        function fillData() {
+            $("#pql-source-input").val(JSON.stringify(source));
+            $("#pql-tabState-input").val(JSON.stringify(cfg));
+            $("#pql-cfg-input").val(JSON.stringify(prettyPrintData));
+            $("#pql-prettyPrint-input").val(JSON.stringify(tabState));
+            $("#pql-results-input").val(JSON.stringify(results));
+
+            console.log(JSON.stringify(source));
+            console.log(JSON.stringify(cfg));
+            console.log(JSON.stringify(prettyPrintData));
+            console.log(JSON.stringify(tabState));
+            console.log(JSON.stringify(results));
+        }
+
+        $("#pqlInput").keypress(function(e) {
+            if (e.which == 13) {
+                fillData();
+                $('#pqlForm').submit();
+            }
+        });
+
+    </script>
+    <script>
+        /*
+                                                                                                                                                                                                        			5 modes: 
+                                                                                                                                                                                                        			
+                                                                                                                                                                                                        			0: lineNum
+                                                                                                                                                                                                        			1: procName
+                                                                                                                                                                                                        			2: varName
+                                                                                                                                                                                                        			3: const
+                                                                                                                                                                                                        			4: boolean
+                                                                                                                                                                                                        		*/
+
+        var source = "procedure Daisy {\r\n\ta = 10;\r\n\tc = a + 4;\r\n\ti = 14 + a;\r\n\tt = c * a + 5;\r\n\tx = c + t * 12;\r\n\tcall Tulip;\r\n\tx = x + a + c;\r\n\tcall Violet;\r\n\tb = x + a * c;\r\n\twhile i {\r\n\t\tb = c - t;\r\n\t\tif a then {\r\n\t\t\tt = t + a;\r\n\t\t\ti = t + 1;\r\n\t\t} else {\r\n\t\t\tc = t + a;\r\n\t\t\tcall Violet;\r\n\t\t\ti = i - 17;\r\n\t\t}\r\n\t\tc = t + a;\r\n\t}\r\n\tcall Iris;\r\n}\r\n\r\nprocedure Iris {\r\n\twhile i {\r\n\t\ta = t * 3 + 2 * c;\r\n\t\tcall Tulip;\r\n\t}\r\n\tt = t + a + i;\r\n}\r\n\r\nprocedure Violet {\r\n\twhile x {\r\n\t\ta = c + a;\r\n\t}\r\n\tc = a + c;\r\n}\r\n\r\nprocedure Tulip {\r\n\twhile b {\r\n\t\tif i then {\r\n\t\t\tc = a + 80;\r\n\t\t} else {\r\n\t\t\ta = a * c + t + b * x;\r\n\t\t}\r\n\t}\r\n}";
+
+        var cfg = "graph TD;DaisyStart[Procedure Daisy];DaisyEnd[End Procedure];1((1));2((2));3((3));4((4));5((5));6((6));7((7));8((8));9((9));10((10));11((11));12((12));13((13));14((14));15((15));16((16));17((17));18((18));19((19));DaisyStart[Procedure Daisy];DaisyStart-->1;1-->2;2-->3;3-->4;4-->5;5-->6;6-->7;7-->8;8-->9;9-->10;10-->11;10-->19;11-->12;12-->13;12-->15;13-->14;14-->18;15-->16;16-->17;17-->18;18-->10;19-->DaisyEnd;IrisStart[Procedure Iris];IrisEnd[End Procedure];20((20));21((21));22((22));23((23));IrisStart[Procedure Iris];IrisStart-->20;20-->21;20-->23;21-->22;22-->20;23-->IrisEnd;VioletStart[Procedure Violet];VioletEnd[End Procedure];24((24));25((25));26((26));VioletStart[Procedure Violet];VioletStart-->24;24-->25;24-->26;25-->24;26-->VioletEnd;TulipStart[Procedure Tulip];TulipEnd[End Procedure];27((27));28((28));29((29));30((30));TulipStart[Procedure Tulip];TulipStart-->27;27-->28;28-->29;28-->30;29-->27;30-->27;27-->TulipEnd;";
+
+        var prettyPrintData = [
+            ["Daisy"],
+            [0, 0, "<procedure>procedure</procedure> <procName>Daisy</procName> {"],
+            [1, 1, "<varName>a</varName> <assignment>=</assignment> <const>10</const>;"],
+            [2, 1, "<varName>c</varName> <assignment>=</assignment> <varName>a</varName> <operator>+</operator> <const>4</const>;"],
+            [3, 1, "<varName>i</varName> <assignment>=</assignment> <const>14</const> <operator>+</operator> <varName>a</varName>;"],
+            [4, 1, "<varName>t</varName> <assignment>=</assignment> <varName>c</varName> <operator>*</operator> <varName>a</varName> <operator>+</operator> <const>5</const>;"],
+            [5, 1, "<varName>x</varName> <assignment>=</assignment> <varName>c</varName> <operator>+</operator> <varName>t</varName> <operator>*</operator> <const>12</const>;"],
+            [6, 1, "<call>call</call> <procName>Tulip</procName>;"],
+            [7, 1, "<varName>x</varName> <assignment>=</assignment> <varName>x</varName> <operator>+</operator> <varName>a</varName> <operator>+</operator> <varName>c</varName>;"],
+            [8, 1, "<call>call</call> <procName>Violet</procName>;"],
+            [9, 1, "<varName>b</varName> <assignment>=</assignment> <varName>x</varName> <operator>+</operator> <varName>a</varName> <operator>*</operator> <varName>c</varName>;"],
+            [10, 1, "<while>while</while> <varName>i</varName> {"],
+            [11, 2, "<varName>b</varName> <assignment>=</assignment> <varName>c</varName> <operator>-</operator> <varName>t</varName>;"],
+            [12, 2, "<if>if</if> <varName>a</varName> {"],
+            [13, 3, "<varName>t</varName> <assignment>=</assignment> <varName>t</varName> <operator>+</operator> <varName>a</varName>;"],
+            [14, 3, "<varName>i</varName> <assignment>=</assignment> <varName>t</varName> <operator>+</operator> <const>1</const>;"],
+            [0, 2, "} <else>else</else> {"],
+            [15, 3, "<varName>c</varName> <assignment>=</assignment> <varName>t</varName> <operator>+</operator> <varName>a</varName>;"],
+            [16, 3, "<call>call</call> <procName>Violet</procName>;"],
+            [17, 3, "<varName>i</varName> <assignment>=</assignment> <varName>i</varName> <operator>-</operator> <const>17</const>;"],
+            [0, 2, "}"],
+            [18, 2, "<varName>c</varName> <assignment>=</assignment> <varName>t</varName> <operator>+</operator> <varName>a</varName>;"],
+            [0, 1, "}"],
+            [19, 1, "<call>call</call> <procName>Iris</procName>;"],
+            [0, 0, "}"],
+            [0, 0, "<procedure>procedure</procedure> <procName>Iris</procName> {"],
+            [20, 1, "<while>while</while> <varName>i</varName> {"],
+            [21, 2, "<varName>a</varName> <assignment>=</assignment> <varName>t</varName> <operator>*</operator> <const>3</const> <operator>+</operator> <const>2</const> <operator>*</operator> <varName>c</varName>;"],
+            [22, 2, "<call>call</call> <procName>Tulip</procName>;"],
+            [0, 1, "}"],
+            [23, 1, "<varName>t</varName> <assignment>=</assignment> <varName>t</varName> <operator>+</operator> <varName>a</varName> <operator>+</operator> <varName>i</varName>;"],
+            [0, 0, "}"],
+            [0, 0, "<procedure>procedure</procedure> <procName>Violet</procName> {"],
+            [24, 1, "<while>while</while> <varName>x</varName> {"],
+            [25, 2, "<varName>a</varName> <assignment>=</assignment> <varName>c</varName> <operator>+</operator> <varName>a</varName>;"],
+            [0, 1, "}"],
+            [26, 1, "<varName>c</varName> <assignment>=</assignment> <varName>a</varName> <operator>+</operator> <varName>c</varName>;"],
+            [0, 0, "}"],
+            [0, 0, "<procedure>procedure</procedure> <procName>Tulip</procName> {"],
+            [27, 1, "<while>while</while> <varName>b</varName> {"],
+            [28, 2, "<if>if</if> <varName>i</varName> {"],
+            [29, 3, "<varName>c</varName> <assignment>=</assignment> <varName>a</varName> <operator>+</operator> <const>80</const>;"],
+            [0, 2, "} <else>else</else> {"],
+            [30, 3, "<varName>a</varName> <assignment>=</assignment> <varName>a</varName> <operator>*</operator> <varName>c</varName> <operator>+</operator> <varName>t</varName> <operator>+</operator> <varName>b</varName> <operator>*</operator> <varName>x</varName>;"],
+            [0, 2, "}"],
+            [0, 1, "}"],
+            [0, 0, "}"]
+        ];
+
+        var tabState = 1;
+
+        var results = [
+            ["Select BOOLEAN", "[4]", "[true]", "3"],
+            ["procedure p; Select p", "[1]", "[\"Daisy\", \"Iris\", \"Violet\", \"Tulip\"]", "3"],
+            ["call c;Select c", "[0]", "[6,8,16,19,22]", "25"],
+            ["call c;procedure p;Select <p,c> with c.procName=\"Iris\"", "[1,0]", "[[\"Daisy\",19], [\"Iris\",19], [\"Violet\",19], [\"Tulip\",19]]", "25"],
+            ["variable v;assign a;Select v pattern a(v,_\"b\"_)", "[2]", "[\"a\"]", "25"],
+            ["constant c;Select c with c.value=10", "[3]", "[10]", "5"]
+        ];
+
+        $(document).ready(function() {
+            insertResult(results);
+            selectTab(tabState);
+            drawGraph(cfg);
+        });
+
+    </script>
+</body>
+
+</html>

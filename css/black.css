@@ -1,0 +1,249 @@
+@media screen and (min-width:768px) {
+    .navbar,
+    .navbar>.container,
+    .navbar-brand-centered {
+        height: 60px;
+    }
+    #results {
+        margin-top: 62px;
+    }
+    #theme_btn {
+        height: 30px !important;
+        width: 30px !important;
+    }
+}
+body {
+    background: #42464A;
+    color: #E6E6E6;
+}
+
+/***top***/
+
+.navbar {
+    background: #1C1C26;
+    border: none;
+    border-radius: 0px;
+}
+.navbar-brand-centered {
+    margin: 0;
+    float: none;
+}
+.navbar>.container .navbar-brand-centered,
+.navbar>.container-fluid .navbar-brand-centered {
+    text-align: center;
+}
+.navbar-brand-centered a img {
+    height: 100%;
+}
+#theme_btn {
+    float: left;
+    background-color: #EEEEEE;
+    height: 20px;
+    width: 20px;
+    padding: 0;
+}
+
+/***left***/
+
+.nav-tabs {
+    border: none;
+    margin: 0 0 20px 0;
+}
+.nav-tabs>li {
+    width: 33.33333%;
+}
+.nav-tabs>li>a {
+    border: 2px solid transparent !important;
+    border-bottom: 2px solid grey !important;
+    border-radius: 0;
+    color: #E6E6E6;
+    text-align: center;
+    padding: 10px 0px;
+}
+.nav-tabs>li>a:hover {
+    border-bottom: 2px solid #8ACCEE !important;
+    background: transparent !important;
+    color: white !important;
+}
+.nav-tabs>li.active>a,
+.nav-tabs>li.active>a:focus {
+    background: transparent;
+    border-bottom: 2px solid #6698B1 !important;
+    color: floralwhite;
+}
+.list-group-item {
+    background: none;
+}
+#editor {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    outline: 1px solid grey;
+}
+.codeBody {
+    font-size: 12px;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+.indentable {}
+.codeTable {
+    background-color: #3A3D48;
+    color: white;
+    border: none;
+}
+.codeTable thead tr th {
+    background-color: #383838;
+    color: #CCCCCC;
+    border: none;
+}
+.codeTable tbody tr td {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 5px;
+    background-color: #3A3D48;
+    border: none;
+}
+.codeTable tbody>tr.warning>td {
+    background-color: #65654D !important;
+}
+.codeTable tbody > tr > td:first-child {
+    background-color: #4D4F5A;
+    color: #A9A9A9;
+}
+.highlightCode {
+    background-color: #65654D;
+}
+.highlightProcName {
+    background-color: #EC83C0;
+    color: #3A3D48;
+}
+.highlightVarName {
+    background-color: #8183CB;
+    color: #3A3D48;
+}
+.highlightCost {
+    background-color: #EDCC67;
+    color: #3A3D48;
+}
+stmtNum {
+    color: #CCCCCC;
+}
+procedure {
+    color: #83C057;
+}
+procName {
+    color: #EC83C0;
+}
+varName {
+    color: #8183CB;
+}
+const {
+    color: #EDCC67;
+}
+call {
+    color: #00A1BE;
+}
+if {
+    color: #00A1BE;
+}
+then {
+    color: #00A1BE;
+}
+else {
+    color: #00A1BE;
+}
+while {
+    color: #00A1BE;
+}
+assignment {
+    color: #E6E6E6;
+}
+bool {
+    color: #F65E3D;
+}
+.mermaid {
+    cursor: pointer;
+}
+#mermaidChart0 {
+    display: block;
+    float: none;
+    margin: 0 auto;
+}
+.mermaid path {
+    fill: #1497BB;
+    stroke: #1497BB !important;
+}
+.node rect,
+.node circle,
+.node polygon {
+    fill: none;
+    stroke: #1497BB;
+    stroke-width: 2px;
+}
+.mermaid .label {
+    color: white;
+    font-size: 18px;
+}
+
+/***right***/
+
+.input-group {
+    border-radius: 0px;
+}
+.input-group-addon,
+.form-control.typeahead,
+.dropdown-menu {
+    color: white !important;
+    background: #282828;
+    border-radius: 0px;
+}
+.dropdown-menu>li>a {
+    color: white !important;
+}
+.btn.btn-default {
+    color: white;
+    background: #0A6464;
+    border-radius: 0px;
+}
+.btn.btn-default:hover {
+    background: #0D8989;
+}
+.spacer {
+    margin-top: 20px;
+    /* define margin as you see fit */
+}
+.panel {
+    background: transparent;
+    color: #E6E6E6;
+    border-radius: 0px;
+    border: none;
+}
+.panel-heading {
+    background: transparent;
+    color: #E6E6E6;
+    border-radius: 0px;
+    border: 1px solid #666666;
+}
+.panel-default>.panel-heading {
+    background-color: #5B8BA3;
+    color: #E6E6E6;
+    border-color: #666666;
+}
+.panel>.table-bordered,
+.panel>.table-bordered>tbody>tr>th,
+.panel>.table-bordered>tbody>tr>td {
+    border: 1px solid #666666;
+}
+.table>tbody>tr>td.warning {
+    background-color: #65654D;
+}
+#tuplesResult {
+    margin: 0;
+}
+#tuplesResult li {
+    text-align: center
+}
+.list-inline {
+    margin-bottom: 0;
+}
