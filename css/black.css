@@ -239,7 +239,7 @@ bool {
     background-color: #65654D;
 }
 #tuplesResult {
-    margin: 0;
+    margin: 2px 0;
 }
 #tuplesResult li {
     text-align: center
