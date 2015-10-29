@@ -65,7 +65,7 @@
 .nav-tabs>li.active>a:focus {
     background: #F5F5F5 !important;
     /*    border-bottom: 2px solid #6698B1 !important;*/
-    color: #4B6199;
+    color: #4B6199 !important;
 }
 #editor {
     position: absolute;
