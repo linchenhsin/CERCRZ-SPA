@@ -31,7 +31,7 @@
 }
 #theme_btn {
     float: left;
-    background-color: #42464A;
+    background-color: #FFFFFF;
     height: 20px;
     width: 20px;
     padding: 0;
@@ -104,15 +104,15 @@
 }
 .highlightProcName {
     background-color: #A20044;
-    color: #F4ECE9;
+    color: #FFFFFF;
 }
 .highlightVarName {
     background-color: #4527a0;
-    color: #F4ECE9;
+    color: #FFFFFF;
 }
 .highlightCost {
     background-color: #827717;
-    color: #F4ECE9;
+    color: #FFFFFF;
 }
 stmtNum {
     color: #546e7a;
